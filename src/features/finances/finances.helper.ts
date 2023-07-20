@@ -1,3 +1,3 @@
-export function joinTag(tag: string[]) {
-    return tag.join(", ");
+export function joinTag(tags: string[]) {
+    return tags.join(", ");
 }

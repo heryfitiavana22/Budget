@@ -13,8 +13,9 @@ import {
 } from "@/shared";
 import { FormFinance } from "./components";
 import { useModalForm } from "./hooks";
+import { FinanceAndTag, Tag } from "@/database";
 
-export function Finances({}: FinancesProps) {
+export function Finances({ finances, optionsTag }: FinancesProps) {
     const { open, idFinance, handleClose, handleOpen } = useModalForm();
 
     return (
@@ -31,7 +32,7 @@ export function Finances({}: FinancesProps) {
             </div>
             <TableData
                 column={["Libellé", "Tag", "Montant", "Action"]}
-                data={data}
+                data={finances}
                 row={(item) => (
                     <TableRow
                         sx={{
@@ -41,8 +42,8 @@ export function Finances({}: FinancesProps) {
                         }}
                     >
                         <TableCell>{item.label}</TableCell>
-                        <TableCell>{joinTag(item.tag)}</TableCell>
-                        <TableCell>{formatAmount(item.montant)} Ar</TableCell>
+                        <TableCell>{joinTag(item.tags)}</TableCell>
+                        <TableCell>{formatAmount(item.amount)} Ar</TableCell>
                         <TableCell>
                             <div className="flex gap-2">
                                 <TableAction type="edit">
@@ -58,13 +59,19 @@ export function Finances({}: FinancesProps) {
                     </TableRow>
                 )}
             />
-            <FormFinance
-                idFinance={idFinance}
-                open={open}
-                onClose={handleClose}
-            />
+            {open && (
+                <FormFinance
+                    idFinance={idFinance}
+                    open={open}
+                    onClose={handleClose}
+                    optionsTag={optionsTag}
+                />
+            )}
         </div>
     );
 }
 
-type FinancesProps = PropsWithChildren<{}>;
+type FinancesProps = PropsWithChildren<{
+    finances: FinanceAndTag[];
+    optionsTag: Tag[];
+}>;

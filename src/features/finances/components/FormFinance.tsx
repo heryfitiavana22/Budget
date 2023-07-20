@@ -1,7 +1,16 @@
-import { Modal, Box, Typography, TextField, Button } from "@mui/material";
-import { PropsWithChildren, useState } from "react";
-import { SelectMutliple } from "./SelectMutliple";
+import {
+    Modal,
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Alert,
+} from "@mui/material";
+import { PropsWithChildren } from "react";
 import { useFormSubmit } from "../hooks";
+import { SelectTags } from "./SelectTags";
+import { Tag } from "@/database";
+import { Spinner } from "@/shared";
 
 const style = {
     position: "absolute" as "absolute",
@@ -14,11 +23,19 @@ const style = {
     p: 4,
 };
 
-export function FormFinance({ idFinance, open, onClose }: FormFinanceProps) {
+export function FormFinance({
+    idFinance,
+    open,
+    onClose,
+    optionsTag,
+}: FormFinanceProps) {
     const {
         tags,
         amount,
         label,
+        message,
+        submitResult,
+        loading,
         handleChangeTag,
         handleAmount,
         handleLabel,
@@ -27,41 +44,56 @@ export function FormFinance({ idFinance, open, onClose }: FormFinanceProps) {
     const type = idFinance ? "Modifier" : "Ajouter";
 
     return (
-        <Modal
-            open={open}
-            onClose={onClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <Box sx={style}>
-                <form className="grid gap-5" onSubmit={handleSubmit(idFinance)}>
-                    <Typography
-                        id="modal-modal-title"
-                        variant="h6"
-                        component="h2"
+        <>
+            <Modal
+                open={open}
+                onClose={onClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <form
+                        className="grid gap-5"
+                        onSubmit={handleSubmit(idFinance)}
                     >
-                        {type} un item dans finance
-                    </Typography>
-                    <TextField
-                        id="Label"
-                        label="Libellé"
-                        variant="standard"
-                        value={label}
-                        onChange={handleLabel}
-                    />
-                    <TextField
-                        type="number"
-                        id="amount"
-                        label="Montant"
-                        variant="standard"
-                        value={amount || ""}
-                        onChange={handleAmount}
-                    />
-                    <SelectMutliple tags={tags} onChangeTag={handleChangeTag} />
-                    <Button variant="outlined">{type}</Button>
-                </form>
-            </Box>
-        </Modal>
+                        <Typography
+                            id="modal-modal-title"
+                            variant="h6"
+                            component="h2"
+                        >
+                            {type} un item dans finance
+                        </Typography>
+                        <TextField
+                            id="Label"
+                            label="Libellé"
+                            variant="standard"
+                            value={label}
+                            onChange={handleLabel}
+                        />
+                        <TextField
+                            type="number"
+                            id="amount"
+                            label="Montant"
+                            variant="standard"
+                            value={amount || ""}
+                            onChange={handleAmount}
+                        />
+                        <SelectTags
+                            tagsSelected={tags}
+                            onChangeTag={handleChangeTag}
+                            optionsTag={optionsTag}
+                        />
+                        <Button type="submit" variant="outlined">
+                            {type}
+                        </Button>
+                        {message && (
+                            <Alert severity={submitResult}>{message}</Alert>
+                        )}
+                    </form>
+                </Box>
+            </Modal>
+            {loading && <Spinner />}
+        </>
     );
 }
 
@@ -69,4 +101,5 @@ type FormFinanceProps = PropsWithChildren<{
     idFinance?: number;
     open: boolean;
     onClose: () => void;
+    optionsTag: Tag[];
 }>;

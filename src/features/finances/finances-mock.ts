@@ -1,26 +1,28 @@
-export const data: Finance[] = [
+import { FinanceAndTag } from "@/database";
+
+export const data: FinanceAndTag[] = [
     {
         id: 1,
-        montant: 100000,
+        amount: 100000,
         label: "Label 1",
-        tag: ["depense"],
+        tags: ["depense"],
     },
     {
         id: 2,
-        montant: 1000000,
+        amount: 1000000,
         label: "Label 2",
-        tag: ["revenue"],
+        tags: ["revenue"],
     },
     {
         id: 3,
-        montant: 200000,
+        amount: 200000,
         label: "Label 3",
-        tag: ["revenue"],
+        tags: ["revenue"],
     },
     {
         id: 4,
-        montant: 30000,
+        amount: 30000,
         label: "Label 4",
-        tag: ["depense"],
+        tags: ["depense"],
     },
 ];
