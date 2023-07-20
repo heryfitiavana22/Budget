@@ -12,7 +12,7 @@ export async function getAllData<T>({
 }
 type GetData = {
     uri: string;
-    cache: RequestCache;
+    cache?: RequestCache;
 };
 
 export async function getOneDataById<T>({
@@ -27,7 +27,7 @@ export async function getOneDataById<T>({
     return {} as T;
 }
 type GetOneDataById = GetData & {
-    id: string;
+    id: string | number;
 };
 
 export async function getAllDataBy<T>({

@@ -2,7 +2,7 @@ import { concatURL } from "./utils";
 
 export async function deleteOneDataById<T>(
     uri: string,
-    id: string
+    id: string | number
 ): Promise<T> {
     const url = concatURL(uri, id);
     const response = await fetch(url, { method: "DELETE" });

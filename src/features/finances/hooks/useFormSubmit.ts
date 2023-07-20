@@ -2,10 +2,10 @@ import { FinanceAndTag } from "@/database";
 import { createData, updateOneDataById } from "@/shared";
 import { ChangeEvent, FormEvent, SyntheticEvent, useState } from "react";
 
-export function useFormSubmit() {
-    const [tags, setTags] = useState<string[]>([]);
-    const [amount, setAmount] = useState<number>();
-    const [label, setLabel] = useState("");
+export function useFormSubmit(financeToUpdate?: FinanceAndTag) {
+    const [tags, setTags] = useState<string[]>(financeToUpdate?.tags || []);
+    const [amount, setAmount] = useState<number>(financeToUpdate?.amount || 0);
+    const [label, setLabel] = useState(financeToUpdate?.label || "");
     const [message, setMessage] = useState("");
     const [submitResult, setSubmitResult] = useState<Alert>("info");
     const [loading, setLoading] = useState(false);
@@ -27,37 +27,34 @@ export function useFormSubmit() {
         ) => {
             setTags(values);
         },
-        handleSubmit: (idFinance = 0) => {
-            return async (e: FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
-                const finance = {
-                    amount,
-                    label,
-                    tags,
-                } as FinanceAndTag;
+        handleSubmit: async (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            const finance = {
+                ...financeToUpdate,
+                amount,
+                label,
+                tags,
+            } as FinanceAndTag;
 
-                if (isNaN(idFinance))
-                    return setMessage("Erreur sur l'id du finance");
-                setLoading(true);
+            setLoading(true);
 
-                try {
-                    // if update
-                    if (idFinance !== 0) {
-                        finance.id = idFinance;
-                        await updateOneDataById("/api/finance", finance);
-                        setSubmitResult("success");
-                        setLoading(false);
-                        return setMessage("Finance mis à jour");
-                    }
-                    await createData("/api/finance", finance);
+            try {
+                // if update
+                if (financeToUpdate) {
+                    await updateOneDataById("/api/finance", finance);
                     setSubmitResult("success");
                     setLoading(false);
-                    return setMessage("Finance crée");
-                } catch (error: any) {
-                    setMessage(error.message);
-                    setSubmitResult("error");
+                    return setMessage("Finance mis à jour");
                 }
-            };
+                await createData("/api/finance", finance);
+                setSubmitResult("success");
+                setLoading(false);
+                return setMessage("Finance crée");
+            } catch (error: any) {
+                setMessage(error.message);
+                setSubmitResult("error");
+                setLoading(false);
+            }
         },
     };
 }

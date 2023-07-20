@@ -9,7 +9,7 @@ import {
 import { PropsWithChildren } from "react";
 import { useFormSubmit } from "../hooks";
 import { SelectTags } from "./SelectTags";
-import { Tag } from "@/database";
+import { FinanceAndTag, Tag } from "@/database";
 import { Spinner } from "@/shared";
 
 const style = {
@@ -24,7 +24,7 @@ const style = {
 };
 
 export function FormFinance({
-    idFinance,
+    finance,
     open,
     onClose,
     optionsTag,
@@ -40,8 +40,8 @@ export function FormFinance({
         handleAmount,
         handleLabel,
         handleSubmit,
-    } = useFormSubmit();
-    const type = idFinance ? "Modifier" : "Ajouter";
+    } = useFormSubmit(finance);
+    const type = finance ? "Modifier" : "Ajouter";
 
     return (
         <>
@@ -54,7 +54,7 @@ export function FormFinance({
                 <Box sx={style}>
                     <form
                         className="grid gap-5"
-                        onSubmit={handleSubmit(idFinance)}
+                        onSubmit={handleSubmit}
                     >
                         <Typography
                             id="modal-modal-title"
@@ -98,7 +98,7 @@ export function FormFinance({
 }
 
 type FormFinanceProps = PropsWithChildren<{
-    idFinance?: number;
+    finance?: FinanceAndTag;
     open: boolean;
     onClose: () => void;
     optionsTag: Tag[];

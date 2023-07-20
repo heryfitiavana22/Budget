@@ -1,4 +1,5 @@
 import { FinanceAndTag, Tag, db, financeTag, tag } from "@/database";
+import { eq } from "drizzle-orm";
 
 export function addFinance(finance: FinanceAndTag) {
     const tags: Tag[] = db.query.tag.findMany();
@@ -19,4 +20,11 @@ export function addFinance(finance: FinanceAndTag) {
             .get();
     });
     return finance;
+}
+
+export function deleteFinanceTag(idFinance: number) {
+    db.delete(financeTag)
+        .where(eq(financeTag.financeId, idFinance))
+        .returning()
+        .get();
 }

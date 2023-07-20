@@ -1,3 +1,5 @@
 export * from "./FilterIcon"
 export * from "./EditIcon"
 export * from "./TrashIcon"
+export * from "./ArrowLeft"
+export * from "./ArrowRight"
