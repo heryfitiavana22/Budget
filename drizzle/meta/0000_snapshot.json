@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "56b77343-6fcb-4c7e-a56d-7fd584cd6b3a",
+  "id": "e7e4708d-9bd6-4fd7-9f1c-793c35206f89",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "finances": {
@@ -14,18 +14,25 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
+        "label": {
+          "name": "label",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "amount": {
           "name": "amount",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
@@ -98,7 +105,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },

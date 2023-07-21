@@ -1,2 +1,2 @@
 export * from "./FormFinance"
-export * from "./Pagination"
+export * from "./FilterTag"

@@ -1,7 +1,8 @@
 CREATE TABLE `finances` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text,
-	`amount` integer
+	`label` text NOT NULL,
+	`amount` integer NOT NULL,
+	`type` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `finance_tag` (
@@ -13,7 +14,7 @@ CREATE TABLE `finance_tag` (
 --> statement-breakpoint
 CREATE TABLE `tags` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text
+	`name` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `users` (

@@ -5,12 +5,14 @@ import {
     TextField,
     Button,
     Alert,
+    InputLabel,
+    MenuItem,
+    Select,
 } from "@mui/material";
-import { PropsWithChildren } from "react";
-import { useFormSubmit } from "../hooks";
+import { FormEvent, PropsWithChildren, useState } from "react";
 import { SelectTags } from "./SelectTags";
 import { FinanceAndTag, Tag } from "@/database";
-import { Spinner } from "@/shared";
+import { Spinner, createData, updateOneDataById } from "@/shared";
 
 const style = {
     position: "absolute" as "absolute",
@@ -29,19 +31,56 @@ export function FormFinance({
     onClose,
     optionsTag,
 }: FormFinanceProps) {
-    const {
-        tags,
-        amount,
-        label,
-        message,
-        submitResult,
-        loading,
-        handleChangeTag,
-        handleAmount,
-        handleLabel,
-        handleSubmit,
-    } = useFormSubmit(finance);
-    const type = finance ? "Modifier" : "Ajouter";
+    const [tags, setTags] = useState<string[]>(finance?.tags || []);
+    const [type, setType] = useState(finance?.type || "");
+    const [amount, setAmount] = useState<number>(finance?.amount || 0);
+    const [label, setLabel] = useState(finance?.label || "");
+    const [message, setMessage] = useState("");
+    const [submitResult, setSubmitResult] = useState<Alert>("info");
+    const [loading, setLoading] = useState(false);
+    const typeResult = finance ? "Modifier" : "Ajouter";
+
+    const resetValue = () => {
+        setTags([]);
+        setAmount(0);
+        setLabel("");
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (tags.length == 0 || !amount || !label || !type) {
+            setSubmitResult("error");
+            return setMessage("Remplir tous les champs");
+        }
+        const currentFinance = {
+            ...finance,
+            amount,
+            label,
+            tags,
+            type,
+        } as FinanceAndTag;
+
+        setLoading(true);
+
+        try {
+            // if update
+            if (finance) {
+                await updateOneDataById("/api/finance", currentFinance);
+                setMessage("Finance mis à jour");
+            } else {
+                await createData("/api/finance", currentFinance);
+                setMessage("Finance crée");
+            }
+            setSubmitResult("success");
+            resetValue();
+            setLoading(false);
+            onClose();
+        } catch (error: any) {
+            setMessage(error.message);
+            setSubmitResult("error");
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -52,10 +91,7 @@ export function FormFinance({
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <form
-                        className="grid gap-5"
-                        onSubmit={handleSubmit}
-                    >
+                    <form className="grid gap-5" onSubmit={handleSubmit}>
                         <Typography
                             id="modal-modal-title"
                             variant="h6"
@@ -68,7 +104,7 @@ export function FormFinance({
                             label="Libellé"
                             variant="standard"
                             value={label}
-                            onChange={handleLabel}
+                            onChange={(e) => setLabel(e.currentTarget.value)}
                         />
                         <TextField
                             type="number"
@@ -76,15 +112,33 @@ export function FormFinance({
                             label="Montant"
                             variant="standard"
                             value={amount || ""}
-                            onChange={handleAmount}
+                            onChange={(e) =>
+                                setAmount(Number(e.currentTarget.value))
+                            }
                         />
+                        <div>
+                            <InputLabel id="demo-simple-select-autowidth-label">
+                                Type :
+                            </InputLabel>
+                            <Select
+                                labelId="demo-simple-select-autowidth-label"
+                                id="demo-simple-select-autowidth"
+                                value={type}
+                                onChange={(e) => setType(e.target.value)}
+                                autoWidth
+                                label="Age"
+                            >
+                                <MenuItem value={"depense"}>Dépense</MenuItem>
+                                <MenuItem value={"revenue"}>Revenue</MenuItem>
+                            </Select>
+                        </div>
                         <SelectTags
                             tagsSelected={tags}
-                            onChangeTag={handleChangeTag}
+                            onChangeTag={(e, values) => setTags(values)}
                             optionsTag={optionsTag}
                         />
                         <Button type="submit" variant="outlined">
-                            {type}
+                            {typeResult}
                         </Button>
                         {message && (
                             <Alert severity={submitResult}>{message}</Alert>

@@ -8,8 +8,9 @@ export const users = sqliteTable("users", {
 
 export const finance = sqliteTable("finances", {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    label: text("name").notNull(),
+    label: text("label").notNull(),
     amount: integer("amount").notNull(),
+    type: text("type").notNull(),
 });
 export type NewFinance = InferModel<typeof finance, "insert">;
 export type Finance = InferModel<typeof finance>;

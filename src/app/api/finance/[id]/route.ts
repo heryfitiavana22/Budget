@@ -1,7 +1,7 @@
 import { Finance, db, finance } from "@/database";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { deleteFinanceTag } from "../finance";
+import { deleteFinanceTag } from "../finance.service";
 
 export async function DELETE(request: Request, { params }: Params) {
     let financeDeleted: Finance | undefined;
