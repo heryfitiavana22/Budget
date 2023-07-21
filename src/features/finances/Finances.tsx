@@ -19,7 +19,7 @@ import {
     formatAmount,
     getAllData,
 } from "@/shared";
-import { FormFinance, FilterTag } from "./components";
+import { FormFinance, FilterTag, FilterType } from "./components";
 import { useTableFinances } from "./hooks";
 import { FinanceAndTag, Tag } from "@/database";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -31,9 +31,12 @@ export function Finances({ optionsTag }: FinancesProps) {
     const currentPage = Number(searchParams.get("page") || 1);
     const tagsParams = searchParams.get("tags");
     const currentTags = tagsParams ? tagsParams.split(",") : [];
+    const typeParams = searchParams.get("type") || "";
     const [page, setPage] = useState(currentPage);
     const [pageCounter, setPageCounter] = useState(1);
     const [tagsFiltered, setTagsFiltered] = useState<string[]>(currentTags);
+    const [typeSelected, setTypeSelected] = useState(typeParams);
+    const isFiltered = tagsFiltered.length > 0 || typeSelected.length > 0;
     const [openForm, setOpenForm] = useState(false);
     const [financeToUpdate, setFinanceToUpdate] = useState<FinanceAndTag>();
     const handleOpenForm = (financeToUpdate?: FinanceAndTag) => {
@@ -43,6 +46,13 @@ export function Finances({ optionsTag }: FinancesProps) {
     const { finances, loading, deleteFinance, setFinances, setLoading } =
         useTableFinances();
     const [anchorTag, setAnchorTag] = useState<HTMLButtonElement | null>(null);
+    const [anchorType, setAnchorType] = useState<HTMLButtonElement | null>(
+        null
+    );
+    const resetFilter = () => {
+        setTagsFiltered([]);
+        setTypeSelected("");
+    };
 
     useEffect(() => {
         new Promise(async (resolve) => {
@@ -51,6 +61,8 @@ export function Finances({ optionsTag }: FinancesProps) {
             let query = `?page=${page}`;
             if (tagsFiltered.length > 0)
                 query += "&tags=" + tagsFiltered.join(",");
+
+            if (typeSelected) query += "&type=" + typeSelected;
 
             router.push(`finances${query}`);
             const data = (await getAllData({
@@ -61,19 +73,21 @@ export function Finances({ optionsTag }: FinancesProps) {
             setLoading(false);
             resolve("");
         });
-    }, [page, tagsFiltered, searchParams, pathname, openForm]);
+    }, [page, tagsFiltered, searchParams, pathname, openForm, typeSelected]);
 
     useEffect(() => {
         const currentPage = Number(searchParams.get("page") || 1);
         const tagsParams = searchParams.get("tags");
         const currentTags = tagsParams ? tagsParams.split(",") : [];
+        const typeParams = searchParams.get("type") || "";
         if (currentPage !== page) setPage(currentPage);
         if (currentTags !== tagsFiltered) setTagsFiltered(currentTags);
+        if (typeParams !== typeSelected) setTypeSelected(typeParams);
     }, [searchParams, pathname]);
 
     return (
         <div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-2">
                 <ButtonGroup
                     variant="outlined"
                     aria-label="outlined button group"
@@ -81,7 +95,7 @@ export function Finances({ optionsTag }: FinancesProps) {
                     <Button onClick={(e) => setAnchorTag(e.currentTarget)}>
                         Tags
                     </Button>
-                    <Button onClick={(e) => setAnchorTag(e.currentTarget)}>
+                    <Button onClick={(e) => setAnchorType(e.currentTarget)}>
                         Type
                     </Button>
                     {Boolean(anchorTag) && (
@@ -93,20 +107,33 @@ export function Finances({ optionsTag }: FinancesProps) {
                             anchor={anchorTag}
                         />
                     )}
+                    {Boolean(anchorType) && (
+                        <FilterType
+                            onClose={() => setAnchorType(null)}
+                            value={typeSelected}
+                            onChange={setTypeSelected}
+                            anchor={anchorType}
+                        />
+                    )}
                 </ButtonGroup>
                 <div className="">
-                    <Button variant="outlined" onClick={() => handleOpenForm()}>
-                        Ajouter
-                    </Button>
+                    <Button onClick={() => handleOpenForm()}>Ajouter</Button>
                 </div>
             </div>
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2">
                 {tagsFiltered.length > 0 && (
                     <Chip
                         label={`Tags : ${tagsFiltered.join(", ")}`}
                         onDelete={() => setTagsFiltered([])}
                     />
                 )}
+                {typeSelected && (
+                    <Chip
+                        label={`Type : ${typeSelected}`}
+                        onDelete={() => setTypeSelected("")}
+                    />
+                )}
+                {isFiltered && <Button onClick={resetFilter}>Effacer</Button>}
             </div>
             <TableData
                 column={["Libellé", "Type", "Tag", "Montant", "Action"]}
@@ -121,7 +148,13 @@ export function Finances({ optionsTag }: FinancesProps) {
                     >
                         <TableCell>{item.label}</TableCell>
                         <TableCell>
-                            <Chip label={item.type} />
+                            <Chip
+                                label={item.type}
+                                color={
+                                    item.type == "depense" ? "error" : "success"
+                                }
+                                variant="outlined"
+                            />
                         </TableCell>
                         <TableCell>
                             {item.tags.map((e) => (

@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
         const page = Number(searchParams.get("page"));
         const tagsParams = searchParams.get("tags");
         const tags = tagsParams ? tagsParams.split(",") : [];
+        const type = searchParams.get("type");
         const select = db
             .select({
                 id: financeTag.financeId,
@@ -30,6 +31,8 @@ export async function GET(request: NextRequest) {
                 or(...tags.map((name) => eq(tag.name, name)))
             );
         }
+        if (type) selectFinances = selectFinances.where(eq(finance.type, type));
+
         const data = selectFinances
             .offset((page - 1) * ROWS)
             .limit(page * ROWS)
