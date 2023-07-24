@@ -1,7 +1,7 @@
 import { FinanceAndTag, db, finance, financeTag, tag } from "@/database";
 import { NextRequest, NextResponse } from "next/server";
 import { addFinance, deleteFinanceTag } from "./finance.service";
-import { eq, or, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 
 const ROWS = 25;
 export async function GET(request: NextRequest) {
@@ -26,12 +26,20 @@ export async function GET(request: NextRequest) {
             .groupBy(financeTag.financeId);
         const count = select.all().length; //  count: sql<number>`COUNT(*)`
         let selectFinances = select;
+        if (type) selectFinances = select.where(eq(finance.type, type));
         if (tags.length > 0) {
-            selectFinances = select.where(
-                or(...tags.map((name) => eq(tag.name, name)))
-            );
+            if (type)
+                selectFinances = select.where(
+                    and(
+                        eq(finance.type, type),
+                        or(...tags.map((name) => eq(tag.name, name)))
+                    )
+                );
+            else
+                selectFinances = select.where(
+                    or(...tags.map((name) => eq(tag.name, name)))
+                );
         }
-        if (type) selectFinances = selectFinances.where(eq(finance.type, type));
 
         const data = selectFinances
             .offset((page - 1) * ROWS)

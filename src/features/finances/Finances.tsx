@@ -19,7 +19,7 @@ import {
     formatAmount,
     getAllData,
 } from "@/shared";
-import { FormFinance, FilterTag, FilterType } from "./components";
+import { FormFinance, FilterTag, FilterType, Statistics } from "./components";
 import { useTableFinances } from "./hooks";
 import { FinanceAndTag, Tag } from "@/database";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -188,6 +188,7 @@ export function Finances({ optionsTag }: FinancesProps) {
                     onChange={(e, value) => setPage(value)}
                 />
             </div>
+            <Statistics data={finances} />
             {openForm && (
                 <FormFinance
                     finance={financeToUpdate}
