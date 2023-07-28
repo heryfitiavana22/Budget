@@ -1,5 +1,56 @@
-import { FinanceAndTag, Tag, db, financeTag, tag } from "@/database";
-import { eq } from "drizzle-orm";
+import { FinanceAndTag, Tag, db, finance, financeTag, tag } from "@/database";
+import { and, eq, or, sql } from "drizzle-orm";
+
+export const ROWS = 25;
+export function getFinances({ page, tags, type }: GetFinances) {
+    const select = db
+        .select({
+            id: financeTag.financeId,
+            label: finance.label,
+            amount: finance.amount,
+            type: finance.type,
+            tags: sql<string>`GROUP_CONCAT(${tag.name})`,
+        })
+        .from(financeTag)
+        .leftJoin(finance, eq(financeTag.financeId, finance.id))
+        .leftJoin(tag, eq(financeTag.tagId, tag.id))
+        .groupBy(financeTag.financeId);
+
+    const count = select.all().length; //  count: sql<number>`COUNT(*)`
+
+    let selectFinances = select;
+    if (type) selectFinances = select.where(eq(finance.type, type));
+    if (tags.length > 0) {
+        if (type)
+            selectFinances = select.where(
+                and(
+                    eq(finance.type, type),
+                    or(...tags.map((name) => eq(tag.name, name)))
+                )
+            );
+        else
+            selectFinances = select.where(
+                or(...tags.map((name) => eq(tag.name, name)))
+            );
+    }
+    if (page) {
+        const p = Number(page);
+        selectFinances = selectFinances.offset((p - 1) * ROWS).limit(p * ROWS);
+    }
+    const data = selectFinances.all();
+    const finances = data.map((finance) => ({
+        ...finance,
+        tags: finance.tags.split(","),
+    }));
+
+    return { finances, count };
+}
+
+type GetFinances = {
+    page: string | null;
+    tags: string[];
+    type: string | null;
+};
 
 export function addFinance(finance: FinanceAndTag) {
     const tags: Tag[] = db.query.tag.findMany();

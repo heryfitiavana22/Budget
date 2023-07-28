@@ -1,54 +1,19 @@
-import { FinanceAndTag, db, finance, financeTag, tag } from "@/database";
+import { FinanceAndTag, db, finance } from "@/database";
 import { NextRequest, NextResponse } from "next/server";
-import { addFinance, deleteFinanceTag } from "./finance.service";
-import { and, eq, or, sql } from "drizzle-orm";
+import { ROWS, addFinance, deleteFinanceTag, getFinances } from "./finance.service";
+import { eq } from "drizzle-orm";
 
-const ROWS = 25;
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
     try {
-        const page = Number(searchParams.get("page"));
+        const page = searchParams.get("page");
         const tagsParams = searchParams.get("tags");
         const tags = tagsParams ? tagsParams.split(",") : [];
         const type = searchParams.get("type");
-        const select = db
-            .select({
-                id: financeTag.financeId,
-                label: finance.label,
-                amount: finance.amount,
-                type: finance.type,
-                tags: sql<string>`GROUP_CONCAT(${tag.name})`,
-            })
-            .from(financeTag)
-            .leftJoin(finance, eq(financeTag.financeId, finance.id))
-            .leftJoin(tag, eq(financeTag.tagId, tag.id))
-            .groupBy(financeTag.financeId);
-        const count = select.all().length; //  count: sql<number>`COUNT(*)`
-        let selectFinances = select;
-        if (type) selectFinances = select.where(eq(finance.type, type));
-        if (tags.length > 0) {
-            if (type)
-                selectFinances = select.where(
-                    and(
-                        eq(finance.type, type),
-                        or(...tags.map((name) => eq(tag.name, name)))
-                    )
-                );
-            else
-                selectFinances = select.where(
-                    or(...tags.map((name) => eq(tag.name, name)))
-                );
-        }
 
-        const data = selectFinances
-            .offset((page - 1) * ROWS)
-            .limit(page * ROWS)
-            .all();
-        const finances = data.map((finance) => ({
-            ...finance,
-            tags: finance.tags.split(","),
-        }));
+        const { finances, count } = getFinances({ page, tags, type });
+
         return NextResponse.json({
             finances,
             pageCounter: Math.ceil(count / ROWS),

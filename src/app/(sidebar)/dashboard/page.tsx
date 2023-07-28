@@ -1,6 +1,7 @@
+import { Dashboard } from "@/features";
 
-export default function Page({}: PageProps) {
-    return <>Page</>
+export default async function Page({}: PageProps) {
+    return <Dashboard />;
 }
 
-type PageProps = {}
+type PageProps = {};

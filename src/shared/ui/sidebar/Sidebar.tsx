@@ -27,6 +27,7 @@ export function Sidebar({}: SidebarProps) {
                         link={item.link}
                         icon={item.Icon}
                         active={item.link == activePage}
+                        onClick={() => setActivePage(item.link)}
                         key={k}
                     />
                 ))}

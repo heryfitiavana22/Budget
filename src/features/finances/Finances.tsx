@@ -23,6 +23,7 @@ import { FormFinance, FilterTag, FilterType, Statistics } from "./components";
 import { useTableFinances } from "./hooks";
 import { FinanceAndTag, Tag } from "@/database";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { FinanceFetched } from "./Finance";
 
 export function Finances({ optionsTag }: FinancesProps) {
     const searchParams = useSearchParams();
@@ -67,7 +68,7 @@ export function Finances({ optionsTag }: FinancesProps) {
             router.push(`finances${query}`);
             const data = (await getAllData({
                 uri: `/api/finance${query}`,
-            })) as any;
+            })) as unknown as FinanceFetched;
             setFinances(data.finances);
             setPageCounter(data.pageCounter);
             setLoading(false);
