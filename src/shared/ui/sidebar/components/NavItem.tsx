@@ -1,13 +1,18 @@
+import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
-export function NavItem({ name, link }: NavItemProps) {
+export function NavItem({ name, link, icon, active = false }: NavItemProps) {
     return (
         <li>
             <a
                 href={link}
-                className="p-2 flex w-full h-full hover:bg-blue-400 rounded-md transition-colors"
+                className={classNames(
+                    "p-2 flex gap-2 w-full h-full hover:bg-blue-400 rounded-md transition-colors",
+                    { "bg-blue-400 active": active }
+                )}
             >
-                {name}
+                <span>{icon}</span>
+                <span>{name}</span>
             </a>
         </li>
     );
@@ -16,4 +21,6 @@ export function NavItem({ name, link }: NavItemProps) {
 type NavItemProps = PropsWithChildren<{
     name: string;
     link: string;
+    icon?: React.ReactNode;
+    active?: boolean;
 }>;

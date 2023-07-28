@@ -97,7 +97,7 @@ export function FormFinance({
                             variant="h6"
                             component="h2"
                         >
-                            {type} un item dans finance
+                            {typeResult} un item dans finance
                         </Typography>
                         <TextField
                             id="Label"

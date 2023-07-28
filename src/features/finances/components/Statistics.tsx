@@ -8,7 +8,7 @@ export function Statistics({ data }: StatisticsProps) {
     const { income, expense } = getTotals(data);
     
     return (
-        <div className="grid grid-cols-2 gap-3 mt-3">
+        <div className="grid md:grid-cols-2 gap-3 mt-3">
             <Stat
                 label="Revenues :"
                 value={formatAmount(income)}
