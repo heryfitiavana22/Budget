@@ -17,7 +17,7 @@ export function Sidebar({}: SidebarProps) {
             </div>
             <ul
                 className={classNames(
-                    "bg-blue-500 md:static md:h-auto md:w-full md:mt-8 md:py-0 py-3 fixed top-0 flex flex-col w-2/4 h-screen text-white z-50 transition-all",
+                    "bg-blue-500 md:static md:h-auto md:w-full md:mt-8 md:py-0 p-2 fixed top-0 flex flex-col w-2/4 h-screen text-white z-50 transition-all",
                     showNav ? "right-0" : "-right-full"
                 )}
             >
