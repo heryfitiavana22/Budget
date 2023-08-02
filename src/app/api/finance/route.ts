@@ -34,6 +34,8 @@ export async function POST(request: Request) {
             amount: currentFinance.amount,
             label: currentFinance.label,
             type: currentFinance.type,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         })
         .returning()
         .get();
@@ -52,6 +54,7 @@ export async function PUT(request: Request) {
             amount: currentFinance.amount,
             label: currentFinance.label,
             type: currentFinance.type,
+            updatedAt: new Date().toISOString(),
         })
         .where(eq(finance.id, currentFinance.id))
         .returning()
