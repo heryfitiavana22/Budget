@@ -12,7 +12,10 @@ export const finance = sqliteTable("finances", {
     amount: integer("amount").notNull(),
     type: text("type").notNull(),
     createdAt: text("created_at").notNull(),
-    updatedAt: text("updated_at").notNull()
+    updatedAt: text("updated_at").notNull(),
+    // userId: integer("userId")
+    //     .notNull()
+    //     .references(() => users.id),
 });
 export type NewFinance = InferModel<typeof finance, "insert">;
 export type Finance = InferModel<typeof finance>;
@@ -28,7 +31,7 @@ export const tag = sqliteTable("tags", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull().unique(),
     createdAt: text("created_at").notNull(),
-    updatedAt: text("updated_at").notNull()
+    updatedAt: text("updated_at").notNull(),
 });
 export type Tag = InferModel<typeof tag>;
 
@@ -41,9 +44,7 @@ export const financeTag = sqliteTable("finance_tag", {
     financeId: integer("financeId")
         .notNull()
         .references(() => finance.id),
-    tagId: integer("tagId")
-        .notNull()
-        .references(() => tag.id),
+    tagId: integer("tagId").references(() => tag.id),
 });
 
 export const financeTagRelations = relations(financeTag, ({ one }) => ({

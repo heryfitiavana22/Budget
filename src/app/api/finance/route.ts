@@ -1,6 +1,11 @@
 import { FinanceAndTag, db, finance } from "@/database";
 import { NextRequest, NextResponse } from "next/server";
-import { ROWS, addFinance, deleteFinanceTag, getFinances } from "./finance.service";
+import {
+    ROWS,
+    addFinance,
+    deleteFinanceTag,
+    getFinances,
+} from "./finance.service";
 import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
@@ -36,6 +41,7 @@ export async function POST(request: Request) {
             type: currentFinance.type,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            // userId: 1,
         })
         .returning()
         .get();

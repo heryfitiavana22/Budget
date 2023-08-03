@@ -1,6 +1,7 @@
 import { FinanceAndTag, Tag, db, finance, financeTag, tag } from "@/database";
 import { and, eq, or, sql } from "drizzle-orm";
 
+// ON UPDATE no action ON DELETE no action
 export const ROWS = 25;
 export function getFinances({ page, tags, type }: GetFinances) {
     const select = db
@@ -13,7 +14,7 @@ export function getFinances({ page, tags, type }: GetFinances) {
         })
         .from(financeTag)
         .leftJoin(finance, eq(financeTag.financeId, finance.id))
-        .leftJoin(tag, eq(financeTag.tagId, tag.id))
+        .fullJoin(tag, eq(financeTag.tagId, tag.id))
         .groupBy(financeTag.financeId);
 
     const count = select.all().length; //  count: sql<number>`COUNT(*)`
@@ -40,7 +41,7 @@ export function getFinances({ page, tags, type }: GetFinances) {
     const data = selectFinances.all();
     const finances = data.map((finance) => ({
         ...finance,
-        tags: finance.tags.split(","),
+        tags: finance.tags ? finance.tags.split(",") : [],
     }));
 
     return { finances, count };
@@ -58,18 +59,34 @@ export function addFinance(finance: FinanceAndTag) {
     const tagsToAdded = finance.tags.filter((tag) => !tagsName.includes(tag));
     // add tag to database if there's new
     tagsToAdded.forEach((name) => {
-        const tagAdded = db.insert(tag).values({ name }).returning().get();
+        const tagAdded = db
+            .insert(tag)
+            .values({
+                name,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            })
+            .returning()
+            .get();
         tags.push(tagAdded);
     });
     const tagsOfFinance = tags.filter((tag) => finance.tags.includes(tag.name));
     // add financeTag to database
-    tagsOfFinance.forEach((tag) => {
+    if (tagsOfFinance.length > 0)
+        tagsOfFinance.forEach((tag) => {
+            const financeTagAdded = db
+                .insert(financeTag)
+                .values({ financeId: finance.id, tagId: tag.id })
+                .returning()
+                .get();
+        });
+    else {
         const financeTagAdded = db
             .insert(financeTag)
-            .values({ financeId: finance.id, tagId: tag.id })
+            .values({ financeId: finance.id, tagId: null })
             .returning()
             .get();
-    });
+    }
     return finance;
 }
 

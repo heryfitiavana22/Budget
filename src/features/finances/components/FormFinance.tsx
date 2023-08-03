@@ -48,7 +48,7 @@ export function FormFinance({
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (tags.length == 0 || !amount || !label || !type) {
+        if (!amount || !label || !type) {
             setSubmitResult("error");
             return setMessage("Remplir tous les champs");
         }
