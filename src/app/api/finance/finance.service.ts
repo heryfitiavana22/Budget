@@ -6,16 +6,16 @@ export const ROWS = 25;
 export function getFinances({ page, tags, type }: GetFinances) {
     const select = db
         .select({
-            id: financeTag.financeId,
+            id: finance.id,
             label: finance.label,
             amount: finance.amount,
             type: finance.type,
             tags: sql<string>`GROUP_CONCAT(${tag.name})`,
         })
-        .from(financeTag)
-        .leftJoin(finance, eq(financeTag.financeId, finance.id))
+        .from(finance)
+        .fullJoin(financeTag, eq(financeTag.financeId, finance.id))
         .fullJoin(tag, eq(financeTag.tagId, tag.id))
-        .groupBy(financeTag.financeId);
+        .groupBy(finance.id);
 
     const count = select.all().length; //  count: sql<number>`COUNT(*)`
 
@@ -39,11 +39,12 @@ export function getFinances({ page, tags, type }: GetFinances) {
         selectFinances = selectFinances.offset((p - 1) * ROWS).limit(p * ROWS);
     }
     const data = selectFinances.all();
+
     const finances = data.map((finance) => ({
         ...finance,
         tags: finance.tags ? finance.tags.split(",") : [],
     }));
-
+    
     return { finances, count };
 }
 
@@ -80,13 +81,13 @@ export function addFinance(finance: FinanceAndTag) {
                 .returning()
                 .get();
         });
-    else {
-        const financeTagAdded = db
-            .insert(financeTag)
-            .values({ financeId: finance.id, tagId: null })
-            .returning()
-            .get();
-    }
+    // else {
+    //     const financeTagAdded = db
+    //         .insert(financeTag)
+    //         .values({ financeId: finance.id, tagId: null })
+    //         .returning()
+    //         .get();
+    // }
     return finance;
 }
 

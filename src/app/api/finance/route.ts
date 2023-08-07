@@ -24,6 +24,10 @@ export async function GET(request: NextRequest) {
             pageCounter: Math.ceil(count / ROWS),
         });
     } catch (error) {
+        console.log("error");
+        console.log(error);
+        
+        
         return NextResponse.json({
             finances: [],
             pageCounter: 0,
