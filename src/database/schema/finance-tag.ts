@@ -3,8 +3,11 @@ import { integer, text, sqliteTable } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    name: text("full_name"),
+    name: text("name"),
+    // password: text("password").notNull(),
+    // email: text("email").notNull(),
 });
+export type User = InferModel<typeof users>;
 
 export const finance = sqliteTable("finances", {
     id: integer("id").primaryKey({ autoIncrement: true }),
