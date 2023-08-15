@@ -1,7 +1,10 @@
 import { PropsWithChildren } from "react";
 import { Sidebar } from "@/shared/";
+import { protectIfNotConnected } from "@/next-auth";
 
-export default function Layout({ children }: LayoutProps) {
+export default async function Layout({ children }: LayoutProps) {
+    protectIfNotConnected();
+
     return (
         <main className="flex">
             <Sidebar />

@@ -1,1 +1,1 @@
-export * from "./checkIfConnected"
+export * from "./protectRoute"

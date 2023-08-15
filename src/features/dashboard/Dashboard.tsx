@@ -9,11 +9,14 @@ import {
 } from "@/shared";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { FinanceFetched } from "../finances/Finance";
+import { useUserInClient } from "@/next-auth";
 
 export function Dashboard({}: DashboardProps) {
     const [finances, setFinances] = useState<FinanceAndTag[]>([]);
     const [loading, setLoading] = useState(true);
     const { income, expense } = getTotalsFinance(finances);
+    // console.log(useUserInClient());
+    
 
     useEffect(() => {
         new Promise(async (resolve) => {

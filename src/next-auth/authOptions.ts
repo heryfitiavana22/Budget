@@ -1,12 +1,12 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+const BASE_URL = process.env.NEXTAUTH_URL;
 
 export const authOptions: AuthOptions = {
     providers: [
         CredentialsProvider({
-            name: "User role",
+            name: "Budget",
             credentials: {
                 email: {
                     label: "email",
@@ -18,22 +18,18 @@ export const authOptions: AuthOptions = {
             async authorize(credentials, req) {
                 if (!credentials) return null;
 
-                const response = await fetch(`/user/iscorrect/`, {
+                const response = await fetch(`${BASE_URL}/api/user/iscorrect`, {
                     method: "post",
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify(credentials),
                 });
+                try {
+                    const responseData = (await response.json()) as any;
+                    if (responseData) return responseData;
+                } catch (error) {
+                    return null;
+                }
 
-                // if (response.status === 200) {
-                //     const user = (await response.json()) as User
-                //     return {
-                //         id: user._id,
-                //         email: user.email,
-                //         name: user.name,
-                //         image: user.imageURL,
-                //         role: user.role,
-                //     }
-                // }
                 return null;
             },
         }),
@@ -59,4 +55,5 @@ export const authOptions: AuthOptions = {
             return token;
         },
     },
+    pages: { signIn: "/auth/login" },
 };
