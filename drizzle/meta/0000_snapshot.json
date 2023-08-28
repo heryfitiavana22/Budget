@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "1324f7ae-9101-4f4e-9a69-33c1778a54cd",
+  "id": "150dd6b7-d594-4e37-ad52-cf708136b36b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "finances": {
@@ -165,6 +165,20 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         }
       },

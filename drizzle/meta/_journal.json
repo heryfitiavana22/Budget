@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1691067889553,
-      "tag": "0000_secret_rockslide",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1692089265630,
-      "tag": "0001_dashing_mephisto",
+      "when": 1693212233189,
+      "tag": "0000_dry_black_knight",
       "breakpoints": true
     }
   ]

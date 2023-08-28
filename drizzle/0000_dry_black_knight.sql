@@ -23,7 +23,9 @@ CREATE TABLE `tags` (
 --> statement-breakpoint
 CREATE TABLE `users` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`full_name` text
+	`full_name` text,
+	`email` text NOT NULL,
+	`password` text NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `tags_name_unique` ON `tags` (`name`);
